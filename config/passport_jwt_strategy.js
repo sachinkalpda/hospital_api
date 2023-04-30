@@ -13,6 +13,7 @@ let opts= {
     secretOrKey : 'hospital_api',
 }
 
+// authenticating
 passport.use(new JWTStrategy(opts, async function(jwtPayload,done){
     try {
         let doctor = await Doctor.findById(jwtPayload._id);

@@ -2,8 +2,26 @@ const Doctor = require('../../../models/Doctor');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const { Validator } = require('node-input-validator');
+
+
+
+// to register a new doctor
 module.exports.create = async function(req,res){
     try {
+        let v = new Validator(req.body,{
+            name : 'required',
+            email : 'required',
+            username : 'required',
+            password : 'required',
+        });
+        const matched = await v.check();
+        if(!matched){
+            return res.json(422,{
+                erorrs : v.errors,
+                status : false
+            });
+        }
         let doctor = await Doctor.create({
             name : req.body.name,
             email : req.body.email,
@@ -23,33 +41,49 @@ module.exports.create = async function(req,res){
         
     } catch (error) {
         console.log('Error in creating doctor',error);
-        return;
+        return res.json(500,{
+            message : 'Internal Server Error',
+            status : false
+        });
     }
 }
 
+
+// for login the existing doctor
 module.exports.login = async function(req,res){
     try {
+        let v = new Validator(req.body,{
+            username : 'required',
+            password : 'required'
+        });
+        const matched = await v.check();
+        if(!matched){
+            return res.json(422,{
+                erorrs : v.errors,
+                status : false
+            });
+        }
         let doctor = await Doctor.findOne({username : req.body.username});
-        if(doctor){
-            if(!doctor || !bcrypt.compareSync(req.body.password,doctor.password) ){
-                return res.json(422,{
-                    message : "Invalid Username/Password",
-                    status : false,
-                });
-            }else{  
-               return res.json(200, {
-                    message : "Logged IN",
-                    status : true,
-                    data : {
-                        token : jwt.sign(doctor.toJSON(),'hospital_api',{expiresIn : 3600000})
-                    }
-                });
-            }
-
+        if(!doctor || !bcrypt.compareSync(req.body.password,doctor.password) ){
+            return res.json(422,{
+                message : "Invalid Username/Password",
+                status : false,
+            });
+        }else{  
+           return res.json(200, {
+                message : "Logged IN",
+                status : true,
+                data : {
+                    token : jwt.sign(doctor.toJSON(),'hospital_api',{expiresIn : '30m'})
+                }
+            });
         }
 
     } catch (error) {
         console.log('Error in doctor login',error);
-        return;
+        return res.json(500,{
+            message : 'Internal Server Error',
+            status : false
+        });
     }
 }
