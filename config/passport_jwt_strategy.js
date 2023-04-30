@@ -10,7 +10,7 @@ const Doctor = require('../models/Doctor');
 
 let opts= {
     jwtFromRequest : ExtractJWT.fromAuthHeaderAsBearerToken(),
-    secretOrKey : 'hospital_api',
+    secretOrKey : process.env.SECRET_KEY,
 }
 
 // authenticating

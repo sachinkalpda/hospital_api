@@ -74,7 +74,7 @@ module.exports.login = async function(req,res){
                 message : "Logged IN",
                 status : true,
                 data : {
-                    token : jwt.sign(doctor.toJSON(),'hospital_api',{expiresIn : '30m'})
+                    token : jwt.sign(doctor.toJSON(),process.env.SECRET_KEY,{expiresIn : '30m'})
                 }
             });
         }
