@@ -30,7 +30,7 @@ module.exports.create = async function(req,res){
         });
         if(doctor){
             return res.json(200,{
-                message : 'Docter Created!',
+                message : 'Docter Registered!',
                 status : true
             });
         }

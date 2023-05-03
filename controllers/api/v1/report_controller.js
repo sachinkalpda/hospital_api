@@ -20,7 +20,7 @@ module.exports.filterReports = async function(req,res){
         if(status == 'all'){
             reports = await Report.find({}).populate('doctor','name -_id').populate('patient','-_id name phone gender').select('createdAt');
         }else{
-            reports = await Report.find({status : status}).populate('doctor').populate('patient');
+            reports = await Report.find({status : status}).populate('doctor', 'name -_id').populate('patient','-_id name phone gender');
         }
         return res.json(200,{
             message : `${reports.length} Reports Found!`,
